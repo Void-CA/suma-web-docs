@@ -1,0 +1,123 @@
+---
+title: "Modelos y Artefactos"
+description: "El sistema de modelos y artefactos de SUMA"
+---
+
+# Modelos y Artefactos
+
+En SUMA, los modelos son la base de todo el sistema y los artefactos son sus instancias con trazabilidad.
+
+## Modelos
+
+### Definición
+Un modelo define la estructura y comportamiento de una entidad:
+
+```suma
+model Producto {
+    id: UUID @primary
+    nombre: String @required
+    precio: Number @min(0)
+    categoria: Categoria
+    creado_en: Timestamp @auto
+    actualizado_en: Timestamp @auto_update
+    
+    // Métodos
+    fn descuento(porcentaje: Number) -> Number {
+        return precio * (1 - porcentaje / 100)
+    }
+    
+    // Validaciones
+    constraint precio_valido {
+        check: precio > 0
+        message: "El precio debe ser positivo"
+    }
+}
+```
+
+### Herencia
+```suma
+model Digital extends Producto {
+    url_descarga: String @required
+    tamaño_mb: Number
+}
+
+model Fisico extends Producto {
+    peso_kg: Number @min(0.1)
+    dimensiones: Dimensiones
+}
+```
+
+## Artefactos
+
+### Creación
+Cada instancia de un modelo es un artefacto con trazabilidad:
+
+```suma
+// Crear un artefacto
+CREATE Producto {
+    nombre: "Laptop Pro",
+    precio: 1200.50,
+    categoria: Categoria.TECNOLOGIA
+}
+```
+
+### Metadatos de Trazabilidad
+Todo artefacto incluye metadatos automáticos:
+
+```json
+{
+    "id": "artifact_123",
+    "model": "Producto",
+    "version": 1,
+    "creado_por": "user_456",
+    "creado_en": "2024-01-15T10:30:00Z",
+    "modificado_por": "user_456",
+    "modificado_en": "2024-01-15T10:30:00Z",
+    "hash": "sha256:abc123...",
+    "dependencies": [],
+    "tags": ["importante", "nuevo"]
+}
+```
+
+## Versionado
+
+Los artefactos soportan versionado automático:
+
+```suma
+// Actualizar un artefacto (crea nueva versión)
+UPDATE Producto artifact_123 {
+    precio: 1100.00  // Precio rebajado
+}
+
+// Historial de versiones
+query historial_producto(id: UUID) -> Producto[] {
+    SELECT * FROM Producto 
+    WHERE id = id 
+    ORDER BY version DESC
+}
+```
+
+## Relaciones
+
+### Referencias
+```suma
+model Pedido {
+    id: UUID @primary
+    cliente: Ref<Usuario>
+    productos: Ref<Producto>[]
+    total: Number
+}
+```
+
+### Queries con Relaciones
+```suma
+query pedidos_con_detalle() -> PedidoDetalle[] {
+    SELECT 
+        p.*,
+        u.nombre as cliente_nombre,
+        pr.nombre as producto_nombre
+    FROM Pedido p
+    JOIN Usuario u ON p.cliente = u.id
+    JOIN Producto pr ON p.productos CONTAINS pr.id
+}
+```

@@ -1,0 +1,89 @@
+---
+title: "Lenguaje SUMA"
+description: "El lenguaje declarativo de SUMA"
+---
+
+# Lenguaje SUMA
+
+SUMA es un lenguaje declarativo diseñado para modelar sistemas de forma clara y expresiva.
+
+## Tipos Básicos
+
+```suma
+// Primitivos
+String, Number, Boolean, Timestamp, UUID
+
+// Colecciones
+Array<T>, Map<K, V>, Set<T>
+
+// Referencias
+Ref<Model>, Optional<T>
+```
+
+## Definición de Modelos
+
+```suma
+model Usuario {
+    id: UUID @primary
+    nombre: String @required
+    email: String @unique
+    edad: Number @min(18)
+    activo: Boolean @default(true)
+    creado_en: Timestamp @auto
+}
+```
+
+## Queries
+
+### SELECT Básico
+```suma
+query usuarios_activos() -> Usuario[] {
+    SELECT * FROM Usuario WHERE activo = true
+}
+```
+
+### JOINs
+```suma
+query usuarios_con_pedidos() -> (Usuario, Pedido)[] {
+    SELECT u.*, p.* 
+    FROM Usuario u 
+    JOIN Pedido p ON u.id = p.usuario_id
+}
+```
+
+### Agregaciones
+```suma
+query estadisticas_usuarios() -> Stats {
+    SELECT 
+        COUNT(*) as total,
+        AVG(edad) as edad_promedio,
+        MAX(creado_en) as ultimo_registro
+    FROM Usuario
+}
+```
+
+## Funciones y Transformaciones
+
+```suma
+fn formatear_nombre(usuario: Usuario) -> String {
+    return "${usuario.nombre} (${usuario.email})"
+}
+
+query nombres_formateados() -> String[] {
+    SELECT formatear_nombre(u) FROM Usuario u
+}
+```
+
+## Validaciones
+
+```suma
+model Email {
+    direccion: String @validate("email")
+    confirmado: Boolean @required
+    
+    constraint email_valido {
+        check: direccion.contains("@")
+        message: "Email debe ser válido"
+    }
+}
+```

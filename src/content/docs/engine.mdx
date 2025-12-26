@@ -1,0 +1,68 @@
+---
+title: "Engine"
+description: "El motor de ejecución de SUMA"
+---
+
+# Engine de SUMA
+
+El engine es responsable de ejecutar queries y gestionar el ciclo de vida de los artefactos.
+
+## Componentes del Engine
+
+### Query Executor
+Procesa y ejecuta queries optimizadas.
+
+### Artifact Manager
+Gestiona el almacenamiento y recuperación de artefactos.
+
+### Tracer
+Mantiene la trazabilidad de todas las operaciones.
+
+## Pipeline de Ejecución
+
+1. **Parsing**: Análisis sintáctico de la query
+2. **Validation**: Verificación semántica
+3. **Optimization**: Optimización del plan de ejecución
+4. **Execution**: Ejecución del plan optimizado
+5. **Tracing**: Registro de la operación
+
+## Caching
+
+El engine implementa múltiples niveles de caché:
+
+### Query Cache
+```rust
+pub struct QueryCache {
+    cache: HashMap<QueryHash, QueryResult>,
+    ttl: Duration,
+}
+```
+
+### Artifact Cache
+```rust
+pub struct ArtifactCache {
+    hot_cache: LRU<ArtifactId, Artifact>,
+    cold_storage: PersistentStore,
+}
+```
+
+## Paralelización
+
+El engine soporta ejecución paralela de queries:
+
+```suma
+query procesar_usuarios(lote: Usuario[]) -> Resultado[] {
+    PARALLEL FOR usuario IN lote {
+        RETURN procesar_usuario(usuario)
+    }
+}
+```
+
+## Monitoreo
+
+Métricas integradas para monitoreo:
+
+- Tiempo de ejecución
+- Uso de memoria
+- Tasa de cache hits
+- Profundidad de trazabilidad

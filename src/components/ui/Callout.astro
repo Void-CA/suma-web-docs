@@ -1,0 +1,30 @@
+---
+export interface Props {
+  type?: 'info' | 'warning' | 'success' | 'error';
+}
+
+const { type = 'info' } = Astro.props;
+
+const icons = {
+  info: 'ℹ️',
+  warning: '⚠️',
+  success: '✅',
+  error: '❌',
+};
+
+const styles = {
+  info: 'border-blue-200 bg-blue-50 text-blue-900 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-200',
+  warning: 'border-yellow-200 bg-yellow-50 text-yellow-900 dark:border-yellow-900 dark:bg-yellow-950 dark:text-yellow-200',
+  success: 'border-green-200 bg-green-50 text-green-900 dark:border-green-900 dark:bg-green-950 dark:text-green-200',
+  error: 'border-red-200 bg-red-50 text-red-900 dark:border-red-900 dark:bg-red-950 dark:text-red-200',
+};
+---
+
+<div class={`rounded-lg border p-4 ${styles[type]} my-6`}>
+  <div class="flex items-start">
+    <span class="mr-3 text-lg">{icons[type]}</span>
+    <div class="flex-1">
+      <slot />
+    </div>
+  </div>
+</div>

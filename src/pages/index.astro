@@ -1,11 +1,24 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import BaseLayout from '../layouts/BaseLayout.astro';
 ---
+<BaseLayout title="SUMA">
 
-<Layout>
-	<Welcome />
-</Layout>
+<section class="mx-auto max-w-3xl py-20">
+  <h1 class="text-4xl font-bold mb-6">SUMA</h1>
+  <p class="text-lg text-muted-foreground">
+    Sistema de Unificación de Métodos Académicos.
+  </p>
+
+  <div class="mt-8 flex gap-4">
+    <a href="/docs/getting-started" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+      Empezar →
+    </a>
+    <a href="/docs/core" class="inline-flex items-center px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors">
+      Core →
+    </a>
+    <a href="/docs/philosophy" class="inline-flex items-center px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors">
+      Filosofía →
+    </a>
+  </div>
+</section>
+</BaseLayout>

@@ -1,0 +1,169 @@
+---
+title: "Valores y Dominios"
+description: "Gestión de dominios y valores en SUMA"
+---
+
+# Valores y Dominios
+
+Los dominios en SUMA permiten definir contextos y límites claros entre diferentes áreas del sistema.
+
+## Definición de Dominios
+
+### Dominio Básico
+```suma
+domain Ventas {
+    // Modelos del dominio
+    model Cliente {
+        id: UUID @primary
+        nombre: String @required
+        email: String @unique
+        rfc: String @required
+    }
+    
+    model Venta {
+        id: UUID @primary
+        cliente: Ref<Cliente>
+        monto: Number @min(0)
+        fecha: Timestamp @auto
+    }
+    
+    // Queries del dominio
+    query ventas_mes(mes: Number, año: Number) -> Venta[] {
+        SELECT * FROM Venta 
+        WHERE MONTH(fecha) = mes AND YEAR(fecha) = año
+    }
+}
+```
+
+### Dominio con Reglas
+```suma
+domain Inventario {
+    model Producto {
+        id: UUID @primary
+        nombre: String @required
+        stock: Number @min(0)
+        precio: Number @min(0)
+    }
+    
+    // Reglas del dominio
+    rule stock_minimo {
+        WHEN producto.stock < 10
+        THEN alertar("Stock bajo para ${producto.nombre}")
+    }
+    
+    rule precio_maximo {
+        WHEN producto.precio > 10000
+        THEN requiere_aprobacion("Gerente")
+    }
+}
+```
+
+## Tipos de Valor
+
+### Enums
+```suma
+enum EstadoPedido {
+    PENDIENTE
+    CONFIRMADO
+    ENVIADO
+    ENTREGADO
+    CANCELADO
+}
+
+enum Categoria {
+    ELECTRONICA
+    ROPA
+    ALIMENTOS
+    HOGAR
+}
+```
+
+### Value Objects
+```suma
+value Direccion {
+    calle: String @required
+    ciudad: String @required
+    estado: String @required
+    cp: String @required
+    
+    fn formato_completo() -> String {
+        return "${calle}, ${ciudad}, ${estado} ${cp}"
+    }
+}
+
+value Dinero {
+    cantidad: Number @min(0)
+    moneda: String @default("MXN")
+    
+    fn convertir_a(tasa: Number, moneda_destino: String) -> Dinero {
+        return Dinero {
+            cantidad: cantidad * tasa,
+            moneda: moneda_destino
+        }
+    }
+}
+```
+
+## Cross-Domain
+
+### Comunicación entre Dominios
+```suma
+domain Pagos {
+    // Referencia a otro dominio
+    model Pago {
+        id: UUID @primary
+        venta: Ref<Ventas.Venta>  // Referencia cross-domain
+        monto: Ref<Dinero>
+        metodo: MetodoPago
+        estado: EstadoPago
+    }
+    
+    query pagos_pendientes() -> Pago[] {
+        SELECT * FROM Pago WHERE estado = EstadoPago.PENDIENTE
+    }
+}
+```
+
+### Eventos entre Dominios
+```suma
+domain Ventas {
+    event VentaCompletada {
+        venta_id: UUID
+        cliente_id: UUID
+        monto: Number
+    }
+}
+
+domain Inventario {
+    on Ventas.VentaCompletada {
+        // Actualizar inventario
+        UPDATE Producto 
+        SET stock = stock - venta.cantidad
+        WHERE id = venta.producto_id
+    }
+}
+```
+
+## Validaciones de Dominio
+
+### Reglas de Negocio
+```suma
+domain Finanzas {
+    model Transaccion {
+        id: UUID @primary
+        monto: Number
+        cuenta: Ref<Cuenta>
+        tipo: TipoTransaccion
+        
+        constraint saldo_suficiente {
+            check: tipo = DEBITO => cuenta.saldo >= monto
+            message: "Saldo insuficiente"
+        }
+        
+        constraint limite_diario {
+            check: monto <= 50000
+            message: "Transacción excede límite diario"
+        }
+    }
+}
+```

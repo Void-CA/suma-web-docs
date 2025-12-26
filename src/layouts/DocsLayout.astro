@@ -1,0 +1,22 @@
+---
+// src/layouts/DocsLayout.astro
+import BaseLayout from "./BaseLayout.astro";
+import SideBar from "../components/ui/SideBar.astro";
+
+interface Props {
+  title?: string;
+}
+
+const { title = "Documentación SUMA" } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<BaseLayout title={title}>
+  <div class="flex">
+    <SideBar currentPath={currentPath} />
+
+    <main class="flex-1 min-h-screen px-8 py-10 md:ml-64 lg:ml-72">
+      <slot />
+    </main>
+  </div>
+</BaseLayout>

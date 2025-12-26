@@ -1,0 +1,54 @@
+---
+title: "Empezar"
+description: "Guía rápida para comenzar con SUMA"
+---
+
+# Empezar con SUMA
+
+## Requisitos Previos
+
+- Rust 1.70+ (para el core)
+- Node.js 18+ (para las herramientas de desarrollo)
+
+## Instalación
+
+```bash
+# Instalar el core de SUMA
+cargo install suma-core
+
+# Inicializar un nuevo proyecto
+suma init mi-proyecto
+```
+
+## Tu Primer Proyecto SUMA
+
+### 1. Definir un Modelo
+
+```suma
+model Usuario {
+    id: String
+    nombre: String
+    email: String
+    creado_en: Timestamp
+}
+```
+
+### 2. Crear una Query
+
+```suma
+query usuarios_activos() -> Usuario[] {
+    SELECT * FROM Usuario WHERE activo = true
+}
+```
+
+### 3. Ejecutar el Proyecto
+
+```bash
+suma run
+```
+
+## Siguientes Pasos
+
+- Explora la arquitectura de SUMA
+- Aprende el lenguaje SUMA
+- Descubre el engine de ejecución

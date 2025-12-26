@@ -1,0 +1,34 @@
+---
+title: "Arquitectura"
+description: "La arquitectura general del sistema SUMA"
+---
+
+# Arquitectura de SUMA
+
+SUMA está diseñado con una arquitectura modular y extensible.
+
+## Componentes Principales
+
+### Core (Rust)
+El corazón de SUMA, escrito en Rust para máxima performance y seguridad.
+
+### Lenguaje SUMA
+Un lenguaje declarativo diseñado específicamente para modelar y consultar.
+
+### Engine
+El motor de ejecución que procesa queries y gestiona artefactos.
+
+## Flujo de Trabajo
+
+1. **Definición**: Los modelos y queries se definen en lenguaje SUMA
+2. **Compilación**: El core compila el código a artefactos ejecutables
+3. **Ejecución**: El engine ejecuta las queries y gestiona el estado
+4. **Trazabilidad**: Cada operación es registrada y trazable
+
+## Integraciones
+
+SUMA se integra con:
+- Bases de datos SQL y NoSQL
+- Sistemas de control de versiones
+- APIs REST y GraphQL
+- Sistemas de mensajería

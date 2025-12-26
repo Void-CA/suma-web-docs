@@ -1,0 +1,66 @@
+---
+title: "Core (Rust)"
+description: "El corazón de SUMA escrito en Rust"
+---
+
+# Core de SUMA
+
+El core de SUMA está escrito en Rust y actúa como el motor fundamental del sistema.
+
+## Características del Core
+
+### Performance
+- Compilación a código nativo
+- Gestión de memoria eficiente
+- Concurrencia segura
+
+### Seguridad
+- Sistema de tipos robusto
+- Sin undefined behavior
+- Gestión segura de recursos
+
+### Extensibilidad
+- Sistema de plugins
+- API en C para integraciones
+- Soporte para WebAssembly
+
+## Arquitectura Interna
+
+### Compilador
+```rust
+pub struct Compiler {
+    parser: Parser,
+    analyzer: SemanticAnalyzer,
+    codegen: CodeGenerator,
+}
+```
+
+### Runtime
+```rust
+pub struct Runtime {
+    artifacts: ArtifactStore,
+    query_engine: QueryEngine,
+    tracer: Tracer,
+}
+```
+
+## APIs Principales
+
+### Artifact API
+```rust
+impl ArtifactStore {
+    pub fn create(&mut self, artifact: Artifact) -> Result<ArtifactId>;
+    pub fn get(&self, id: ArtifactId) -> Option<&Artifact>;
+    pub fn update(&mut self, id: ArtifactId, artifact: Artifact) -> Result<()>;
+    pub fn delete(&mut self, id: ArtifactId) -> Result<()>;
+}
+```
+
+### Query API
+```rust
+impl QueryEngine {
+    pub fn execute(&self, query: Query) -> Result<QueryResult>;
+    pub fn validate(&self, query: Query) -> ValidationResult;
+    pub fn optimize(&self, query: Query) -> Query;
+}
+```
